@@ -1,6 +1,8 @@
 package com.example.test
 
-import android.annotation.SuppressLint
+import androidx.compose.animation.animateContentSize
+import androidx.compose.animation.core.Spring
+import androidx.compose.animation.core.spring
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -12,71 +14,73 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.MoreVert
-import androidx.compose.material.icons.filled.Style
+import androidx.compose.material.icons.filled.ExpandLess
+import androidx.compose.material.icons.filled.ExpandMore
 import androidx.compose.material.icons.filled.TrendingUp
 import androidx.compose.material3.Card
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 
-data class CustomCard2Data (
-    val title: String,
-    val cardCount: Int,
-    val author: String,
-    val studierCount: Int
-)
-
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CustomCard2(
     title: String,
     cardCount: Int,
     author: String,
     studierCount: Int = 0,
-    @SuppressLint("ModifierParameter") modifier: Modifier = Modifier
+    modifier: Modifier = Modifier
 ) {
+    var expanded by remember { mutableStateOf(false) }
+
     Card(
-        modifier = modifier.width(240.dp),
-        shape = RoundedCornerShape(16.dp)
+        onClick = { expanded = !expanded },
+        modifier = modifier
+            .width(240.dp)
+            .animateContentSize(
+                animationSpec = spring(
+                    dampingRatio = Spring.DampingRatioNoBouncy,
+                    stiffness = Spring.StiffnessMedium
+                )
+            ),
+        shape = MaterialTheme.shapes.medium
     ) {
         Column(
             modifier = Modifier.padding(16.dp)
         ) {
-            // Top row: icon + studiers badge
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.Top
             ) {
-                // Left: cards icon
                 Icon(
-                    // imageVector = Icons.Default.Style,
                     painter = painterResource(R.drawable.cards_star_24px),
                     contentDescription = "Cards",
-                    tint = Color(124, 182, 252),
+                    tint = MaterialTheme.colorScheme.onPrimaryContainer,
                     modifier = Modifier
                         .size(48.dp)
                         .background(
-                            color = Color(98, 99, 120),
-                            shape = RoundedCornerShape(8.dp)
+                            color = MaterialTheme.colorScheme.primaryContainer,
+                            shape = MaterialTheme.shapes.small
                         )
                         .padding(10.dp)
                 )
 
-                // Right: studiers badge
                 if (studierCount > 0) {
                     Row(
                         modifier = Modifier
                             .background(
-                                color = Color(98, 99, 120),
+                                color = MaterialTheme.colorScheme.secondaryContainer,
                                 shape = RoundedCornerShape(20.dp)
                             )
                             .padding(horizontal = 10.dp, vertical = 6.dp),
@@ -85,14 +89,14 @@ fun CustomCard2(
                         Icon(
                             imageVector = Icons.Default.TrendingUp,
                             contentDescription = "Trending",
-                            tint = Color.White,
+                            tint = MaterialTheme.colorScheme.onSecondaryContainer,
                             modifier = Modifier.size(16.dp)
                         )
                         Spacer(Modifier.size(4.dp))
                         Text(
                             text = "$studierCount studiers today",
-                            fontSize = 12.sp,
-                            color = Color.White
+                            style = MaterialTheme.typography.labelMedium,
+                            color = MaterialTheme.colorScheme.onSecondaryContainer
                         )
                     }
                 }
@@ -100,16 +104,13 @@ fun CustomCard2(
 
             Spacer(Modifier.size(20.dp))
 
-            // Title
             Text(
                 text = title,
-                fontSize = 14.sp,
-                fontWeight = FontWeight.Bold
+                style = MaterialTheme.typography.titleSmall
             )
 
             Spacer(Modifier.size(8.dp))
 
-            // Bottom row: card count + author + more button
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween,
@@ -117,18 +118,22 @@ fun CustomCard2(
             ) {
                 Text(
                     text = "$cardCount cards · by $author",
-                    fontSize = 13.sp
+                    style = MaterialTheme.typography.bodySmall
                 )
-                IconButton(
-                    onClick = {},
-                    modifier = Modifier.size(24.dp)
-                ) {
-                    Icon(
-                        imageVector = Icons.Default.MoreVert,
-                        contentDescription = "More",
-                        modifier = Modifier.size(20.dp)
-                    )
-                }
+                Icon(
+                    imageVector = if (expanded) Icons.Default.ExpandLess else Icons.Default.ExpandMore,
+                    contentDescription = if (expanded) "Collapse" else "Expand",
+                    modifier = Modifier.size(20.dp)
+                )
+            }
+
+            if (expanded) {
+                Spacer(Modifier.size(12.dp))
+                Text(
+                    text = "Join $studierCount learners mastering \"$title\". This set contains $cardCount carefully curated cards by $author.",
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
             }
         }
     }

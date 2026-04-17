@@ -4,7 +4,6 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.horizontalScroll
@@ -13,7 +12,6 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -22,25 +20,17 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccountCircle
-import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.Diamond
-import androidx.compose.material.icons.filled.FolderOpen
-import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Style
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.material3.BottomAppBar
 import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonColors
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ProgressIndicatorDefaults
@@ -58,14 +48,10 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.test.ui.theme.TestTheme
-import com.google.android.material.color.MaterialColors
-import kotlin.math.exp
+import com.example.test.ui.theme.AppTheme
 
 val unionVerticalPaddingValue = 20.dp
 
@@ -75,7 +61,7 @@ class TestAPP : ComponentActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
-            TestTheme {
+            AppTheme {
                 Scaffold(
                     modifier = Modifier
                         .fillMaxSize()
@@ -186,7 +172,7 @@ fun MainInterfacePart(modifier: Modifier) {
                         modifier = Modifier
                             .fillMaxWidth()
                             .height(14.dp),
-                        color = Color(226, 135, 67),
+                        color = MaterialTheme.colorScheme.primary,
                         // color = ProgressIndicatorDefaults.linearColor,
                         trackColor = ProgressIndicatorDefaults.linearTrackColor,
                         strokeCap = ProgressIndicatorDefaults.LinearStrokeCap,
@@ -203,8 +189,8 @@ fun MainInterfacePart(modifier: Modifier) {
                             .fillMaxWidth()
                             .height(60.dp),
                         colors = ButtonDefaults.buttonColors(
-                            containerColor = Color(255, 0, 0),
-                            contentColor = Color(255, 255, 255)
+                            containerColor = MaterialTheme.colorScheme.secondary,
+                            contentColor = MaterialTheme.colorScheme.onPrimary
                         ),
                         content = {
                             Text(
@@ -237,13 +223,13 @@ fun MainInterfacePart(modifier: Modifier) {
                         modifier = Modifier
                             .size(64.dp)
                             .background(
-                                color = Color(98, 99, 120),
+                                color = MaterialTheme.colorScheme.primaryContainer,
                                 shape = RoundedCornerShape(8.dp)
                             )
                             .padding(16.dp),
                         contentDescription = "Cards",
                         imageVector = Icons.Default.Style,
-                        tint = Color(124, 182, 252)
+                        tint = MaterialTheme.colorScheme.onPrimaryContainer
                     )
                     Spacer(Modifier.size(10.dp))
                     Column(
