@@ -25,6 +25,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -44,8 +45,11 @@ class TestAPP : ComponentActivity() {
         setContent {
             AppTheme {
                 val rootNavController = rememberNavController()
+                val appContext = LocalContext.current.applicationContext
                 val userProfileViewModel: UserProfileViewModel = viewModel()
-                val flashcardSetViewModel: FlashcardSetViewModel = viewModel()
+                val flashcardSetViewModel: FlashcardSetViewModel = viewModel(
+                    factory = FlashcardSetViewModel.factory(appContext)
+                )
                 AppNavHost(
                     rootNavController = rootNavController,
                     userProfileViewModel = userProfileViewModel,

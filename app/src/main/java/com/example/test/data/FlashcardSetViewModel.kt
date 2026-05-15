@@ -1,37 +1,54 @@
 package com.example.test.data
 
-import androidx.compose.runtime.mutableStateListOf
+import android.content.Context
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.viewModelScope
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.launch
 
-class FlashcardSetViewModel : ViewModel() {
-    private val _sets = mutableStateListOf(
-        FlashcardSet(
-            id = 1L,
-            title = "Test Flash Cards",
-            description = "Sample starter deck",
-            author = "you",
-            cardCount = 2
-        ),
-        FlashcardSet(
-            id = 2L,
-            title = "Quizland basics",
-            description = "Intro to the app",
-            author = "Quizland",
-            cardCount = 11
+class FlashcardSetViewModel(
+    private val repository: FlashcardRepository
+) : ViewModel() {
+
+    val sets: StateFlow<List<FlashcardSet>> = repository.allSets
+        .stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(5_000),
+            initialValue = emptyList()
         )
-    )
-    val sets: List<FlashcardSet> get() = _sets
 
     fun addSet(title: String, description: String, author: String, cardCount: Int) {
-        _sets.add(
-            0,
-            FlashcardSet(
-                id = System.currentTimeMillis(),
-                title = title.trim(),
-                description = description.trim(),
-                author = author.ifBlank { "you" },
-                cardCount = cardCount
+        viewModelScope.launch {
+            repository.add(
+                FlashcardSet(
+                    title = title.trim(),
+                    description = description.trim(),
+                    author = author.ifBlank { "you" },
+                    cardCount = cardCount
+                )
             )
-        )
+        }
+    }
+
+    fun update(set: FlashcardSet) {
+        viewModelScope.launch { repository.update(set) }
+    }
+
+    fun delete(set: FlashcardSet) {
+        viewModelScope.launch { repository.delete(set) }
+    }
+
+    companion object {
+        fun factory(context: Context): ViewModelProvider.Factory =
+            object : ViewModelProvider.Factory {
+                @Suppress("UNCHECKED_CAST")
+                override fun <T : ViewModel> create(modelClass: Class<T>): T {
+                    val dao = AppDatabase.getInstance(context).flashcardDao()
+                    return FlashcardSetViewModel(FlashcardRepository(dao)) as T
+                }
+            }
     }
 }
